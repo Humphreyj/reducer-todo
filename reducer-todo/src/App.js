@@ -1,10 +1,12 @@
-import React, {useState, useEffect } from 'react';
+import React, {useState, useReducer } from 'react';
 import styled from 'styled-components';
 
 import TodoList from './components/TodoList';
 import TodoForm from './components/TodoForm';
 import './components/Todo.css';
 import './App.css';
+
+import { initialState, todoReducer } from './reducers/index'
 
 function App() {
   const AppWrap =  styled.div
@@ -18,36 +20,28 @@ function App() {
   min-height: 16em;
   `
 
-  const [todos, updateTodos] =  useState({
+  const [todos, updateTodos] =  useState({})
 
-    tasks: [
-      {
-        id:1,
-        title: "Eat some Food",
-        completed: false
-      },
-      {
-        id:2,
-        title: "Walk",
-        completed: false
-      },
-    ]
-  })
+  const [state, dispatch] = useReducer(todoReducer, initialState)
+
+  console.log(state)
 
  const completedTextHandler = (itemId) => {
     
-    updateTodos({
-      ...todos,tasks: todos.tasks.map(item => {
-        console.log(item)
-        if(itemId === item.id) {
-          return {
-            ...item,
-            completed: !item.completed
-          };
-        }
-        return item
-      })
-    })
+    // updateTodos({
+    //   ...state,tasks: state.tasks.map(item => {
+    //     console.log(item)
+    //     if(itemId === item.id) {
+    //       return {
+    //         ...item,
+    //         completed: !item.completed
+    //       };
+    //     }
+    //     return item
+    //   })
+    // })
+
+    dispatch({ type:'COMPLETE', payload: itemId })
   }
 
  const addTask = (itemText) => {
@@ -57,25 +51,29 @@ function App() {
       id: Date.now()
     }
 
-    updateTodos({
-      todos,tasks: [...todos.tasks, newTask]
-    })
+    dispatch({ type: 'ADD_TODO', payload: newTask })
+
+    // updateTodos({
+    //   todos,tasks: [...todos.tasks, newTask]
+    // })
   }
 
  const clearCompleted = () => {
-    let filteredTodos = todos.tasks.filter(item => {
+    let filteredTodos = state.tasks.filter(item => {
        return item.completed === false;
      })
  
-     updateTodos({
-       todos,tasks: [...filteredTodos]
-     })
+    //  updateTodos({
+    //    state,tasks: [...filteredTodos]
+    //  })
+
+    dispatch({ type:'CLEAR',payload: filteredTodos })
    }
 
   return (
     <AppWrap>
         <TodoList
-        todoData={todos}
+        todoData={state}
         completedTextHandler={completedTextHandler}
         />
         <TodoForm 

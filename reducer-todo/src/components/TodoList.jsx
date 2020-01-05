@@ -12,7 +12,7 @@ vertical-align:middle;
 const TodoList = (props) => {
 
    
-    
+    console.log(props.todoData)
     return (
         <div>
             {
